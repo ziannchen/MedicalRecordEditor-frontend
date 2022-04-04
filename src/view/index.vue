@@ -1,7 +1,11 @@
 <template>
   <div class="box" ref="box" @contextmenu.prevent>
     <div class="menu" id="app" ref="left" @contextmenu.prevent>
-      <leftMenu v-if="treeData.length != 0" v-bind:menuData="treeData">
+      <leftMenu
+        v-if="treeData.length != 0"
+        v-bind:menuData="treeData"
+        @contextmenu.prevent
+      >
       </leftMenu>
     </div>
     <div class="resize" title="收缩侧边栏" ref="resize"></div>
@@ -18,6 +22,7 @@
         <button v-on:click="getMode()">获取当前模式</button>
         <br />
         <b>内部方法：</b>
+        <button v-on:click="postNote()">1</button>
         <button v-on:click="importXML()">导入xml</button>
         <button v-on:click="exportXML()">导出xml</button>
         <button v-on:click="downloadXML()">下载xml</button>
@@ -36,6 +41,8 @@
 import leftMenu from "../components/leftMenu.vue";
 import sdeEditor from "../components/sdeEditor";
 import axios from "axios";
+import { EventBus } from "../event-bus.js";
+var config = require("../../config/api-config");
 export default {
   components: {
     sdeEditor,
@@ -49,45 +56,52 @@ export default {
   },
   mounted() {
     this.dragControllerDiv();
+    EventBus.$on("note-a", (id) => {
+      // A发送来的消息
+      console.log(id);
+      // this.importXML(xml);
+      this.getNote(id, "A");
+    });
   },
   created() {
     let that = this;
-    axios.get("http://127.0.0.1:3000/").then(function (response) {
-      var jsonData = response.data;
+    axios.get(config.url + "/departments").then(function (response) {
+      var jsonData = response.data.departments;
       console.log("get json");
       console.log(jsonData);
       let myMap = new Map();
       for (var i = 0; i < jsonData.length; i++) {
-        if (!myMap.has(jsonData[i].first)) {
-          myMap.set(jsonData[i].first, new Map());
+        if (!myMap.has(jsonData[i].First)) {
+          myMap.set(jsonData[i].First, new Map());
         }
 
-        if (!myMap.get(jsonData[i].first).has(jsonData[i].second)) {
-          myMap.get(jsonData[i].first).set(jsonData[i].second, new Array());
+        if (!myMap.get(jsonData[i].First).has(jsonData[i].Second)) {
+          myMap.get(jsonData[i].First).set(jsonData[i].Second, new Array());
         }
 
         myMap
-          .get(jsonData[i].first)
-          .get(jsonData[i].second)
-          .push(jsonData[i].name);
+          .get(jsonData[i].First)
+          .get(jsonData[i].Second)
+          .push([jsonData[i].Name, jsonData[i].Id]);
       }
       var result = [];
-      for (const first of myMap.keys()) {
+      for (const First of myMap.keys()) {
         var currentFirst = {};
-        currentFirst.title = first;
+        currentFirst.title = First;
         currentFirst.expand = false;
 
         currentFirst.children = [];
-        var internalMap = myMap.get(first);
-        for (const second of internalMap.keys()) {
+        var internalMap = myMap.get(First);
+        for (const Second of internalMap.keys()) {
           var currentSecond = {};
-          currentSecond.title = second;
+          currentSecond.title = Second;
           currentSecond.expand = false;
           currentSecond.children = [];
-          var nameList = internalMap.get(second);
+          var nameList = internalMap.get(Second);
           for (const name of nameList) {
             var currentName = {};
-            currentName.title = name;
+            currentName.title = name[0];
+            currentName.id = name[1];
             currentName.expand = false;
             currentName.contextmenu = true;
             currentSecond.children.push(currentName);
@@ -162,7 +176,11 @@ export default {
       this.$refs.sdeEditor.setHTML(this.txthtml);
     },
     importXML() {
-      const xml = `<?xml version="1.0" encoding="UTF-8"?><xml><html>%3Cp%3Eadfa%E6%89%93%E5%8F%91sfadsf%E9%98%BFsfadsf%E9%98%BF%E6%96%AFdfa%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%3Cspan%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20id%3D%22abc1%22%20sde-model%3D%22%257B%2522mode%2522%253A%2522EDITOR%2522%252C%2522notdel%2522%253A0%252C%2522strictverify%2522%253A0%252C%2522verify%2522%253A%2522%255E%255B0-9%255D*%2524%2522%252C%2522required%2522%253A0%252C%2522desc%2522%253A%2522%25E6%2595%25B4%25E6%2595%25B0%25E6%258E%25A7%25E4%25BB%25B6%2522%252C%2522remotedata%2522%253A%257B%2522url%2522%253A%2522%252Fdata%252Fjson1.json%2522%252C%2522method%2522%253A%2522get%2522%252C%2522data%2522%253A%257B%2522name%2522%253A%2522tl%2522%257D%257D%257D%22%20contenteditable%3D%22false%22%20class%3D%22sde-ctrl%22%20sde-isloadasyncdata%3D%22true%22%20bindingdata%3D%22undefined%22%20sde-updatetime%3D%222018-05-08T12%3A32%3A22.721Z%22%3E%3Cspan%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20contenteditable%3D%22true%22%20class%3D%22sde-value%22%20title%3D%22%E6%95%B4%E6%95%B0%E6%8E%A7%E4%BB%B6%22%3E%E6%95%B4%E6%95%B0%E6%8E%A7%E4%BB%B6%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%20%26nbsp%3Bsd%E5%95%8A%E6%96%AF%E9%A1%BF%E5%8F%91%E6%89%93%E5%8F%91%E6%96%AF%E8%92%82%E8%8A%AC%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%3Cspan%20sde-value%3D%22%5B%7B%20%26quot%3Blabel%26quot%3B%3A%20%26quot%3B%E7%94%B7%26quot%3B%2C%20%26quot%3Bvalue%26quot%3B%3A%201%20%7D%5D%22%20sde-type%3D%22select%22%20sde-updatetime%3D%222018-05-08T12%3A32%3A22.722Z%22%20sde-right%3D%22.%22%20id%3D%22abc-select%22%20sde-model%3D%22%257B%2522mode%2522%253A%2522EDITOR%2522%252C%2522notdel%2522%253A0%252C%2522strictverify%2522%253A0%252C%2522required%2522%253A0%252C%2522multi%2522%253A0%252C%2522desc%2522%253A%2522%25E6%2580%25A7%25E5%2588%25AB%2522%252C%2522bindingdata%2522%253A%255B%255D%252C%2522remotedata%2522%253A%257B%2522url%2522%253A%2522%252Fdata%252Fsex.json%2522%252C%2522method%2522%253A%2522get%2522%252C%2522headers%2522%253A%257B%257D%252C%2522data%2522%253A%257B%257D%257D%257D%22%20contenteditable%3D%22false%22%20class%3D%22sde-ctrl%22%20sde-isloadasyncdata%3D%22true%22%20bindingdata%3D%22%5B%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E7%94%B7%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A1%7D%2C%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E5%A5%B3%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A2%7D%2C%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E6%9C%AA%E7%9F%A5%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A3%7D%5D%22%3E%3Cspan%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20contenteditable%3D%22true%22%20class%3D%22sde-value%20sde-select%22%20title%3D%22%E6%80%A7%E5%88%AB%22%3E%E7%94%B7%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3Bsd%E5%95%8A%E6%89%93%E7%88%B1%E7%9A%84%E5%8F%91%E7%9A%84%E8%92%82%E8%8A%AC%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%3Cspan%20sde-value%3D%22%5B%7B%20%26quot%3Blabel%26quot%3B%3A%20%26quot%3B%E6%84%9F%E8%A7%89%E5%BE%88%E5%A5%BD%26quot%3B%2C%20%26quot%3Bvalue%26quot%3B%3A%201%20%7D%2C%20%7B%20%26quot%3Blabel%26quot%3B%3A%20%26quot%3B%E6%84%9F%E8%A7%89%E4%B8%80%E8%88%AC%26quot%3B%2C%20%26quot%3Bvalue%26quot%3B%3A%202%20%7D%5D%22%20sde-type%3D%22select%22%20sde-updatetime%3D%222018-05-08T12%3A32%3A22.728Z%22%20sde-right%3D%22.%22%20id%3D%22abc-select1%22%20sde-model%3D%22%257B%2522mode%2522%253A%2522EDITOR%2522%252C%2522notdel%2522%253A0%252C%2522strictverify%2522%253A0%252C%2522required%2522%253A0%252C%2522multi%2522%253A1%252C%2522desc%2522%253A%2522%25E6%2584%259F%25E8%25A7%2589%2522%252C%2522bindingdata%2522%253A%255B%255D%252C%2522remotedata%2522%253A%257B%2522url%2522%253A%2522%252Fdata%252Ffeel.json%2522%252C%2522method%2522%253A%2522get%2522%252C%2522headers%2522%253A%257B%257D%252C%2522data%2522%253A%257B%257D%257D%257D%22%20contenteditable%3D%22false%22%20class%3D%22sde-ctrl%22%20sde-isloadasyncdata%3D%22true%22%20bindingdata%3D%22%5B%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E6%84%9F%E8%A7%89%E5%BE%88%E5%A5%BD%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A1%7D%2C%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E6%84%9F%E8%A7%89%E4%B8%80%E8%88%AC%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A2%7D%2C%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E6%97%A0%E6%84%9F%E8%A7%89%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A3%7D%2C%7B%26quot%3Blabel%26quot%3B%3A%26quot%3B%E6%84%9F%E8%A7%89%E7%B3%9F%E7%B3%95%26quot%3B%2C%26quot%3Bvalue%26quot%3B%3A4%7D%5D%22%3E%3Cspan%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20contenteditable%3D%22true%22%20class%3D%22sde-value%20sde-select%22%20title%3D%22%E6%84%9F%E8%A7%89%22%3E%3Cspan%20class%3D%22sde-val-item%22%20sde-value%3D%221%22%3E%E6%84%9F%E8%A7%89%E5%BE%88%E5%A5%BD%3C%2Fspan%3E%3Cspan%20class%3D%22sde-val-item%22%20sde-value%3D%222%22%3E%E6%84%9F%E8%A7%89%E4%B8%80%E8%88%AC%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3Bsd%E5%95%8A%E6%89%93%E5%8F%91sf%3C%2Fp%3E%3Cp%3E%E5%BC%80%E5%A7%8B%E6%97%B6%E9%97%B4%EF%BC%9A%26nbsp%3B%3Cspan%20id%3D%22kssj%22%20sde-type%3D%22date%22%20sde-model%3D%22%257B%2522mode%2522%253A%2522EDITOR%2522%252C%2522notdel%2522%253A0%252C%2522strictverify%2522%253A0%252C%2522required%2522%253A0%252C%2522desc%2522%253A%2522%2522%252C%2522defvalue%2522%253A%25222018-5-7%252016%253A08%253A09%2522%252C%2522format%2522%253A%2522%257Byyyy%257D-%257BMM%257D-%257Bdd%257D%2520%257Bhh%257D%253A%257Bmm%257D%253A%257Bss%257D%2522%252C%2522min%2522%253A%2522%2522%252C%2522max%2522%253A%2522%2522%257D%22%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20class%3D%22sde-value%22%3E%E5%BC%80%E5%A7%8B%E6%97%B6%E9%97%B4%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%E9%98%BF%E6%89%93%E5%8F%91%E6%89%93%0A%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%E7%BB%93%E6%9D%9F%E6%97%B6%E9%97%B4%EF%BC%9A%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%3Cspan%20id%3D%22jssj%22%20sde-type%3D%22date%22%20sde-model%3D%22%257B%2522mode%2522%253A%2522EDITOR%2522%252C%2522notdel%2522%253A0%252C%2522strictverify%2522%253A0%252C%2522required%2522%253A0%252C%2522desc%2522%253A%2522%2522%252C%2522defvalue%2522%253A%25222018-5-7%252016%253A08%253A09%2522%252C%2522format%2522%253A%2522%257Byyyy%257D-%257BMM%257D-%257Bdd%257D%2520%257Bhh%257D%253A%257Bmm%257D%253A%257Bss%257D%2522%252C%2522min%2522%253A%25222018-4-7%252016%253A08%253A09%2522%252C%2522max%2522%253A%25222018-5-17%252016%253A08%253A09%2522%257D%22%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20class%3D%22sde-value%22%3E%E7%BB%93%E6%9D%9F%E6%97%B6%E9%97%B4%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%E9%98%BF%E6%89%93%E5%8F%91%E6%89%93%0A%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%E5%8F%91%E9%9A%8F%E6%84%8F%E6%97%B6%E9%97%B4%EF%BC%9A%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%3Cspan%20id%3D%22sysj%22%20sde-type%3D%22date%22%20sde-model%3D%22%257B%2522mode%2522%253A%2522EDITOR%2522%252C%2522notdel%2522%253A0%252C%2522strictverify%2522%253A0%252C%2522required%2522%253A0%252C%2522desc%2522%253A%2522%2522%252C%2522defvalue%2522%253A%25222018-5-7%252016%253A08%253A09%2522%252C%2522format%2522%253A%2522%257Byyyy%257D%25E5%25B9%25B4%257BMM%257D-%257Bdd%257D%2520%257Bhh%257D%253A%257Bmm%257D%253A%257Bss%257D%2522%252C%2522min%2522%253A%25222018-4-7%252016%253A08%253A09%2522%252C%2522max%2522%253A%25222018-5-17%252016%253A08%253A09%2522%257D%22%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20class%3D%22sde-value%22%3E%E7%BB%93%E6%9D%9F%E6%97%B6%E9%97%B4%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%E9%98%BF%E6%89%93%E5%8F%91%E6%89%93%0A%20%26nbsp%3B%20%26nbsp%3B%20%26nbsp%3B%E5%8F%91%3C%2Fp%3E</html></xml>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?><xml><controls><id /><type>label</type><value>&lt;span class=&quot;sde-ctrl sde-label&quot; id=&quot;&quot; sde-type=&quot;label&quot; title=&quot;&quot;&gt;基本信息&lt;/span&gt;</value></controls><controls><id /><type>label</type><value>基本信息</value></controls><controls><id>1</id><type>label</type><value>编号：</value></controls><controls><id>patient-id</id><type>text</type><value /></controls><controls><id /><type>label</type><value>姓名：&lt;span class=&quot;sde-ctrl&quot; contenteditable=&quot;false&quot; id=&quot;patient-name&quot; sde-type=&quot;text&quot; sde-right=&quot;.&quot; sde-model=&quot;%7B%22desc%22%3A%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%2C%22required%22%3A1%2C%22strictverify%22%3A1%2C%22notdel%22%3A1%2C%22verify%22%3A%22%5C%5CS%22%2C%22mode%22%3A%22EDITOR%22%7D&quot; sde-isloadasyncdata=&quot;false&quot;&gt;&lt;span class=&quot;sde-value&quot; contenteditable=&quot;true&quot; sde-left=&quot;[&quot; sde-right=&quot;]&quot; title=&quot;病人姓名&quot; _backups=&quot;&quot;&gt;病人姓名&lt;/span&gt;&lt;/span&gt;</value></controls><controls><id>patient-name</id><type>text</type><value /></controls><html>%3Cp%20style%3D%22text-align%3A%20center%3B%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%3E%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%221%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E7%BC%96%E5%8F%B7%EF%BC%9A%3C%2Fspan%3E%26nbsp%3B%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-id%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E7%25BC%2596%25E5%258F%25B7%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255E%255B0-9%255D*%2524%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%26nbsp%3B%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E5%A7%93%E5%90%8D%EF%BC%9A%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-name%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E5%25A7%2593%25E5%2590%258D%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255C%255CS%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E</html></xml>`;
+      this.$refs.sdeEditor.sde.importXML(xml);
+    },
+    import(xml) {
+      // const xml = `<?xml version="1.0" encoding="UTF-8"?><xml><controls><id /><type>label</type><value>&lt;span class=&quot;sde-ctrl sde-label&quot; id=&quot;&quot; sde-type=&quot;label&quot; title=&quot;&quot;&gt;基本信息&lt;/span&gt;</value></controls><controls><id /><type>label</type><value>基本信息</value></controls><controls><id>1</id><type>label</type><value>编号：</value></controls><controls><id>patient-id</id><type>text</type><value /></controls><controls><id /><type>label</type><value>姓名：&lt;span class=&quot;sde-ctrl&quot; contenteditable=&quot;false&quot; id=&quot;patient-name&quot; sde-type=&quot;text&quot; sde-right=&quot;.&quot; sde-model=&quot;%7B%22desc%22%3A%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%2C%22required%22%3A1%2C%22strictverify%22%3A1%2C%22notdel%22%3A1%2C%22verify%22%3A%22%5C%5CS%22%2C%22mode%22%3A%22EDITOR%22%7D&quot; sde-isloadasyncdata=&quot;false&quot;&gt;&lt;span class=&quot;sde-value&quot; contenteditable=&quot;true&quot; sde-left=&quot;[&quot; sde-right=&quot;]&quot; title=&quot;病人姓名&quot; _backups=&quot;&quot;&gt;病人姓名&lt;/span&gt;&lt;/span&gt;</value></controls><controls><id>patient-name</id><type>text</type><value /></controls><html>%3Cp%20style%3D%22text-align%3A%20center%3B%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%3E%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%221%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E7%BC%96%E5%8F%B7%EF%BC%9A%3C%2Fspan%3E%26nbsp%3B%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-id%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E7%25BC%2596%25E5%258F%25B7%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255E%255B0-9%255D*%2524%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%26nbsp%3B%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E5%A7%93%E5%90%8D%EF%BC%9A%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-name%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E5%25A7%2593%25E5%2590%258D%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255C%255CS%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E</html></xml>`;
       this.$refs.sdeEditor.sde.importXML(xml);
     },
     exportXML() {
@@ -170,6 +188,40 @@ export default {
     },
     downloadXML() {
       this.$refs.sdeEditor.sde.downloadXML();
+    },
+    postTemplate() {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?><xml><controls><id /><type>label</type><value>&lt;span class=&quot;sde-ctrl sde-label&quot; id=&quot;&quot; sde-type=&quot;label&quot; title=&quot;&quot;&gt;基本信息&lt;/span&gt;</value></controls><controls><id /><type>label</type><value>基本信息</value></controls><controls><id>1</id><type>label</type><value>编号：</value></controls><controls><id>patient-id</id><type>text</type><value /></controls><controls><id /><type>label</type><value>姓名：&lt;span class=&quot;sde-ctrl&quot; contenteditable=&quot;false&quot; id=&quot;patient-name&quot; sde-type=&quot;text&quot; sde-right=&quot;.&quot; sde-model=&quot;%7B%22desc%22%3A%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%2C%22required%22%3A1%2C%22strictverify%22%3A1%2C%22notdel%22%3A1%2C%22verify%22%3A%22%5C%5CS%22%2C%22mode%22%3A%22EDITOR%22%7D&quot; sde-isloadasyncdata=&quot;false&quot;&gt;&lt;span class=&quot;sde-value&quot; contenteditable=&quot;true&quot; sde-left=&quot;[&quot; sde-right=&quot;]&quot; title=&quot;病人姓名&quot; _backups=&quot;&quot;&gt;病人姓名&lt;/span&gt;&lt;/span&gt;</value></controls><controls><id>patient-name</id><type>text</type><value /></controls><html>%3Cp%20style%3D%22text-align%3A%20center%3B%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%3E%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%221%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E7%BC%96%E5%8F%B7%EF%BC%9A%3C%2Fspan%3E%26nbsp%3B%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-id%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E7%25BC%2596%25E5%258F%25B7%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255E%255B0-9%255D*%2524%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%26nbsp%3B%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E5%A7%93%E5%90%8D%EF%BC%9A%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-name%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E5%25A7%2593%25E5%2590%258D%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255C%255CS%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E</html></xml>`;
+      axios
+        .post(config.url + "/note-template", {
+          noteType: "1",
+          template: xml,
+        })
+        .then(function (response) {
+          console.log(response);
+        });
+    },
+    postNote() {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?><xml><controls><id /><type>label</type><value>&lt;span class=&quot;sde-ctrl sde-label&quot; id=&quot;&quot; sde-type=&quot;label&quot; title=&quot;&quot;&gt;基本信息&lt;/span&gt;</value></controls><controls><id /><type>label</type><value>基本信息</value></controls><controls><id>1</id><type>label</type><value>编号：</value></controls><controls><id>patient-id</id><type>text</type><value /></controls><controls><id /><type>label</type><value>姓名：&lt;span class=&quot;sde-ctrl&quot; contenteditable=&quot;false&quot; id=&quot;patient-name&quot; sde-type=&quot;text&quot; sde-right=&quot;.&quot; sde-model=&quot;%7B%22desc%22%3A%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%2C%22required%22%3A1%2C%22strictverify%22%3A1%2C%22notdel%22%3A1%2C%22verify%22%3A%22%5C%5CS%22%2C%22mode%22%3A%22EDITOR%22%7D&quot; sde-isloadasyncdata=&quot;false&quot;&gt;&lt;span class=&quot;sde-value&quot; contenteditable=&quot;true&quot; sde-left=&quot;[&quot; sde-right=&quot;]&quot; title=&quot;病人姓名&quot; _backups=&quot;&quot;&gt;病人姓名&lt;/span&gt;&lt;/span&gt;</value></controls><controls><id>patient-name</id><type>text</type><value /></controls><html>%3Cp%20style%3D%22text-align%3A%20center%3B%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%3E%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%221%22%20sde-type%3D%22label%22%20title%3D%22%E7%BC%96%E5%8F%B7%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%25BC%2596%25E5%258F%25B7%2522%257D%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E7%BC%96%E5%8F%B7%EF%BC%9A%3C%2Fspan%3E%26nbsp%3B%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-id%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E7%25BC%2596%25E5%258F%25B7%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255E%255B0-9%255D*%2524%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E7%BC%96%E5%8F%B7%3C%2Fspan%3E%3C%2Fspan%3E%26nbsp%3B%26nbsp%3B%3C%2Fp%3E%3Cp%3E%3Cspan%20class%3D%22sde-ctrl%20sde-label%22%20id%3D%22%22%20sde-type%3D%22label%22%20title%3D%22%22%20contenteditable%3D%22true%22%20sde-isloadasyncdata%3D%22false%22%3E%E5%A7%93%E5%90%8D%EF%BC%9A%3Cspan%20class%3D%22sde-ctrl%22%20contenteditable%3D%22false%22%20id%3D%22patient-name%22%20sde-type%3D%22text%22%20sde-right%3D%22.%22%20sde-model%3D%22%257B%2522desc%2522%253A%2522%25E7%2597%2585%25E4%25BA%25BA%25E5%25A7%2593%25E5%2590%258D%2522%252C%2522required%2522%253A1%252C%2522strictverify%2522%253A1%252C%2522notdel%2522%253A1%252C%2522verify%2522%253A%2522%255C%255CS%2522%252C%2522mode%2522%253A%2522EDITOR%2522%257D%22%20sde-isloadasyncdata%3D%22false%22%3E%3Cspan%20class%3D%22sde-value%22%20contenteditable%3D%22true%22%20sde-left%3D%22%5B%22%20sde-right%3D%22%5D%22%20title%3D%22%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%22%20_backups%3D%22%22%3E%E7%97%85%E4%BA%BA%E5%A7%93%E5%90%8D%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E</html></xml>`;
+      axios
+        .post(config.url + "/note", {
+          param: {
+            patientId: 1,
+            noteType: "A",
+            note: xml,
+          },
+        })
+        .then(function (response) {
+          console.log(response);
+        });
+    },
+    getNote(id, type) {
+      let that = this;
+      axios
+        .get(config.url + "/note?patientId=" + id + "&noteType=" + type)
+        .then(function (response) {
+          console.log(response.data.note);
+          that.$refs.sdeEditor.sde.importXML(response.data.note);
+        });
     },
   },
 };
