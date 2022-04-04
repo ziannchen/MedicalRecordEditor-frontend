@@ -1,0 +1,43 @@
+<template>
+  <Tree :data="data5" @on-contextmenu="handleContextMenu">
+    <template slot="contextMenu">
+      <DropdownItem @click.native="handleContextMenuEdit">编辑</DropdownItem>
+      <DropdownItem
+        @click.native="handleContextMenuDelete"
+        style="color: #ed4014"
+        >删除</DropdownItem
+      >
+    </template>
+  </Tree>
+</template>
+<script>
+export default {
+  props: {
+    menuData: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  mounted() {
+    console.log(this.data5);
+    console.log(this.data6);
+  },
+  data() {
+    return {
+      data5: this.menuData,
+    };
+  },
+
+  methods: {
+    handleContextMenu(data) {
+      this.contextData = data;
+    },
+    handleContextMenuEdit() {
+      this.$Message.info("Click edit of" + this.contextData.title);
+    },
+    handleContextMenuDelete() {
+      this.$Message.info("Click delete of" + this.contextData.title);
+    },
+  },
+};
+</script>
