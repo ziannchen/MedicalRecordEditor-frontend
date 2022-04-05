@@ -262,7 +262,6 @@ export default {
     left: 0;
     height: 100%;
     width: 100%;
-    margin: 1% 0px;
     overflow: hidden;
     background: #ffffff;
 }
@@ -271,8 +270,9 @@ export default {
     width: calc(22% - 20px); /*左侧初始化宽度*/
     height: 100%;
     float: left;
-    background-color: #868686;
+    background-color: #f0eded;
     user-select: none;
+    overflow-y: scroll;
 }
 /*拖拽区div样式*/
 .resize {
