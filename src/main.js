@@ -10,8 +10,8 @@ Vue.use(ViewUI);
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+	el: '#app',
+	router,
+	components: { App },
+	template: '<App/>'
 })
