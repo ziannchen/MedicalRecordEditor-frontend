@@ -42,7 +42,7 @@
                 />
                 <br />
             </div>
-            <div style="margin: 0 auto; width: 1200px">
+            <div style="margin: 0 auto">
                 <sde-editor ref="sdeEditor"></sde-editor>
             </div>
         </div>
@@ -267,7 +267,7 @@ export default {
 }
 /*左侧div样式*/
 .menu {
-    width: calc(22% - 20px); /*左侧初始化宽度*/
+    width: calc(20% - 3px); /*左侧初始化宽度*/
     height: 100%;
     float: left;
     background-color: #f0eded;
@@ -295,7 +295,7 @@ export default {
 /*右侧div'样式*/
 .editor {
     float: left;
-    width: 68%; /*右侧初始化宽度*/
+    width: 80%; /*右侧初始化宽度*/
     height: 100%;
     background: #fff;
 }
