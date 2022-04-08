@@ -24,7 +24,7 @@ export default {
         },
         height: {
             type: String,
-            default: "700px",
+            default: "800px",
         },
     },
     data() {

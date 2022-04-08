@@ -28,6 +28,7 @@ export default {
     data() {
         return {
             currentId: -1,
+            currentRecordType: "",
             data5: this.menuData,
         };
     },
@@ -37,12 +38,16 @@ export default {
             if (
                 data.length != 0 &&
                 data[0].id != undefined &&
-                this.currentId != data[0].id
+                (this.currentId != data[0].id ||
+                    this.currentRecordType != data[0].title)
             ) {
                 this.currentId = data[0].id;
-                EventBus.$emit("note-a", {
+                this.currentRecordType = data[0].title;
+                console.log(data[0].id);
+                EventBus.$emit("openRecord", {
                     id: data[0].id,
-                    name: data[0].title,
+                    recordType: data[0].title,
+                    department: data[0].department,
                 });
             }
         },
