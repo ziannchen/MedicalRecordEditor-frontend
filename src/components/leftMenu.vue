@@ -43,11 +43,13 @@ export default {
             ) {
                 this.currentId = data[0].id;
                 this.currentRecordType = data[0].title;
-                console.log(data[0].id);
+                console.log(data[0]);
                 EventBus.$emit("openRecord", {
                     id: data[0].id,
+                    name: data[0].name,
                     recordType: data[0].title,
                     department: data[0].department,
+                    IDNumber: data[0].idNumber,
                 });
             }
         },

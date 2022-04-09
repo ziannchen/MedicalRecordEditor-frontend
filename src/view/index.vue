@@ -69,29 +69,37 @@ export default {
     mounted() {
         this.dragControllerDiv();
 
-        EventBus.$on("openRecord", ({ id, recordType, department }) => {
-            console.log("receive:" + id, recordType);
-            this.currId = id;
-            this.currType = recordType;
-            // this.importXML(xml);
-            this.loadRecord(id, recordType, department);
-        });
+        EventBus.$on(
+            "openRecord",
+            ({ id, name, recordType, department, IDNumber }) => {
+                console.log("receive:" + id, recordType);
+                this.currId = id;
+                this.currType = recordType;
+                // this.importXML(xml);
+
+                this.loadRecord(id, name, recordType, department, IDNumber);
+            }
+        );
 
         let data = this.loadFile("../../config/api-config");
         console.log(data);
     },
     created() {
         let that = this;
-        axios.get(config.url + "/patientInfos").then(function (response) {
-            that.treeData = response.data.patientInfos;
-        });
-
-        // axios
-        //     .get(config.url + "/patientInfo?patientId=" + 1)
-        //     .then(function (response) {
-        //         that.treeData = response.data.patientInfo;
-        //         console.log(that.treeData);
-        //     });
+        var patientId = this.$route.params.id;
+        console.log(this.$route.params.id);
+        if (patientId == undefined) {
+            axios.get(config.url + "/patientInfos").then(function (response) {
+                that.treeData = response.data.patientInfos;
+            });
+        } else {
+            axios
+                .get(config.url + "/patientInfo?patientId=" + patientId)
+                .then(function (response) {
+                    that.treeData = response.data.patientInfo;
+                    console.log(that.treeData);
+                });
+        }
     },
     methods: {
         loadFile(name) {
@@ -206,8 +214,13 @@ export default {
                     console.log(response);
                 });
         },
-        loadRecord(id, type, department) {
+        loadRecord(id, name, type, department, IDNumber) {
             let that = this;
+            console.log("id:" + id);
+            console.log("name:" + name);
+            console.log("type:" + type);
+            console.log("department:" + department);
+            console.log("IDNumber:" + IDNumber);
             axios
                 .get(
                     config.url +
@@ -220,11 +233,55 @@ export default {
                     console.log(response.data);
                     that.$refs.sdeEditor.sde.importXML(response.data.record);
                     if (!response.data.isRecord) {
+                        console.log(that.getDate());
+                        that.$refs.sdeEditor.sde
+                            .getControlById("visit-time")
+                            .setValue(that.getDate());
+                        that.$refs.sdeEditor.sde
+                            .getControlById("name-text")
+                            .setValue(name);
+                        that.$refs.sdeEditor.sde
+                            .getControlById("patientId-text")
+                            .setValue(id);
                         that.$refs.sdeEditor.sde
                             .getControlById("department")
                             .setValue(department);
+                        that.$refs.sdeEditor.sde
+                            .getControlById("ID-text")
+                            .setValue(IDNumber);
                     }
                 });
+        },
+        getDate() {
+            const myDate = new Date();
+            //获取当前年
+            const year = myDate.getFullYear();
+            //获取当前月
+            const month = myDate.getMonth() + 1;
+            //获取当前日
+            const date = myDate.getDate();
+            //获取当前小时数(0-23)
+            const h = myDate.getHours();
+            //获取当前分钟数(0-59)
+            const m = myDate.getMinutes();
+
+            //获取当前时间
+            const time =
+                year +
+                "-" +
+                this.convert(month) +
+                "-" +
+                this.convert(date) +
+                " " +
+                this.convert(h) +
+                ":" +
+                this.convert(m);
+
+            return time;
+        },
+        //日期时间处理
+        convert(val) {
+            return val < 10 ? "0" + val : val;
         },
     },
 };
