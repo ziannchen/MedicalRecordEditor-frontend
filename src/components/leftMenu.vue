@@ -35,21 +35,14 @@ export default {
 
     methods: {
         handleLeftClick(data) {
-            if (
-                data.length != 0 &&
-                data[0].id != undefined &&
-                (this.currentId != data[0].id ||
-                    this.currentRecordType != data[0].title)
-            ) {
-                this.currentId = data[0].id;
-                this.currentRecordType = data[0].title;
+            console.log(111);
+            if (data.length != 0) {
                 console.log(data[0]);
                 EventBus.$emit("openRecord", {
-                    id: data[0].id,
-                    name: data[0].name,
-                    recordType: data[0].title,
-                    department: data[0].department,
-                    IDNumber: data[0].idNumber,
+                    xml: data[0].xml,
+                    recordNo: data[0].recordNo,
+                    isRecord: data[0].isRecord,
+                    recordType: data[0].recordType,
                 });
             }
         },

@@ -792,7 +792,12 @@ export default {
         });
 
         this.sde.addListener("contentchange", function () {
-            console.log("contentchange ok!");
+            console.log("111");
+            console.log(arguments);
+        });
+
+        this.sde.addListener("ctrlchange", function () {
+            console.log("1121");
         });
         //todo 这里可以尝试调用this.sde的各种方法
     },

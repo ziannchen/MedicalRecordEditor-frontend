@@ -1,25 +1,31 @@
 import Vue from "vue";
 import Router from "vue-router";
-import index from "../view/index";
+import inpatient from "../view/inpatient";
+import outpatient from "../view/outpatient";
 import templateEdit from "../view/template-edit";
 
 Vue.use(Router);
 
 export default new Router({
     routes: [{
-            path: "/patients",
-            name: "index",
-            component: index
+            path: "/inpatient",
+            name: "inpatient",
+            component: inpatient
         },
         {
-            path: "/patients/:id",
-            name: "index",
-            component: index
+            path: "/inpatient/:id",
+            name: "inpatients",
+            component: inpatient
         },
         {
             path: "/template-edit",
             name: "templateEdit",
             component: templateEdit
+        },
+        {
+            path: "/outpatient/:id",
+            name: "outpatients",
+            component: outpatient
         }
     ]
 });

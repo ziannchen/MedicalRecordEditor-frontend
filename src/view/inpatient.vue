@@ -27,18 +27,8 @@
                 <button v-on:click="getMode()">获取当前模式</button>
                 <br />
                 <b>内部方法：</b>
-                <button v-on:click="postTemplate()">上传模板</button>
                 <button v-on:click="saveRecord()">保存当前病历</button>
-                <button v-on:click="importXML()">导入xml</button>
-                <button v-on:click="aaa()">打印A</button>
-                <button v-on:click="downloadXML()">下载xml</button>
-                <button v-on:click="getHTML()">获取编辑器内容</button>
-                <button v-on:click="setHTML()">设置编辑器内容</button
-                ><input
-                    type="text"
-                    v-model="txthtml"
-                    placeholder="请输入html内容"
-                />
+                <button v-on:click="isChanged()">是否发生改变</button>
                 <br />
             </div>
             <div style="margin: 0 auto">
@@ -64,6 +54,7 @@ export default {
             treeData: [],
             currId: -1,
             currType: "",
+            xxml: "",
         };
     },
     mounted() {
@@ -102,6 +93,9 @@ export default {
         }
     },
     methods: {
+        isChanged() {
+            console.log(this.$refs.sdeEditor.sde.exportXML() == this.xxml);
+        },
         loadFile(name) {
             // name为文件所在位置
             let xhr = new XMLHttpRequest(),
@@ -231,6 +225,7 @@ export default {
                 )
                 .then(function (response) {
                     console.log(response.data);
+
                     that.$refs.sdeEditor.sde.importXML(response.data.record);
                     if (!response.data.isRecord) {
                         console.log(that.getDate());
@@ -250,6 +245,8 @@ export default {
                             .getControlById("ID-text")
                             .setValue(IDNumber);
                     }
+
+                    that.xxml = that.$refs.sdeEditor.sde.exportXML();
                 });
         },
         getDate() {
