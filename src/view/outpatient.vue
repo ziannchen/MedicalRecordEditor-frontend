@@ -2,20 +2,17 @@
     <div class="box" ref="box" @contextmenu.prevent>
         <div class="menu" id="app" ref="left" @contextmenu.prevent>
             <div>
-                <div>门诊挂号序号： {{ patientInfo.Mzghxh }}</div>
-                <div>姓名：{{ patientInfo.Xm }}</div>
-                <div>性别： {{ patientInfo.Xb }}</div>
-                <div>出生时间： {{ patientInfo.Cssj }}</div>
-                <div>年龄： {{ patientInfo.Nl }}</div>
-                <div>科别： {{ patientInfo.Kb }}</div>
-                <div>病人编号： {{ patientInfo.Cdno }}</div>
-                <div>身份证号： {{ patientInfo.Sfzhm }}</div>
+                <div>门诊挂号序号： {{ patientInfo.mzghxh }}</div>
+                <div>姓名：{{ patientInfo.xm }}</div>
+                <div>性别： {{ patientInfo.xb }}</div>
+                <div>出生时间： {{ patientInfo.cssj }}</div>
+                <div>年龄： {{ patientInfo.nl }}</div>
+                <div>科别： {{ patientInfo.kb }}</div>
+                <div>病人编号： {{ patientInfo.cdno }}</div>
+                <div>身份证号： {{ patientInfo.sfzhm }}</div>
             </div>
             <div>
-                <leftMenu
-                    v-if="treeData.length != 0"
-                    v-bind:menuData="treeData"
-                >
+                <leftMenu v-if="childData" v-bind:menuData="treeData">
                 </leftMenu>
             </div>
         </div>
@@ -67,15 +64,16 @@ export default {
     data() {
         return {
             patientInfo: {
-                Mzghxh: "",
-                Xm: "",
-                Xb: "",
-                Cssj: "",
-                Nl: "",
-                Kb: "",
-                Cdno: "",
-                Sfzhm: "",
+                mzghxh: "",
+                xm: "",
+                xb: "",
+                cssj: "",
+                nl: "",
+                kb: "",
+                cdno: "",
+                sfzhm: "",
             },
+            childData: true,
             txthtml: "",
             treeData: [],
             currIsRecord: false,
@@ -91,7 +89,6 @@ export default {
         EventBus.$on(
             "openRecord",
             ({ xml, recordNo, isRecord, recordType }) => {
-                console.log(xml);
                 this.import(xml);
                 this.currXml = xml;
                 this.currRecordNo = recordNo;
@@ -113,19 +110,29 @@ export default {
         console.log(data);
     },
     created() {
-        let that = this;
         var mzghxh = this.$route.params.id;
         console.log(this.$route.params.id);
-
-        axios
-            .get(config.url + "/outpatient?mzghxh=" + mzghxh)
-            .then(function (response) {
-                that.treeData = response.data.data.MenuData;
-                that.patientInfo = response.data.data.PatientInfo;
-                console.log(response.data.data);
-            });
+        this.loadLeftInfo(mzghxh);
     },
     methods: {
+        refreshLeft() {
+            this.childData = false;
+            this.$nextTick(() => {
+                this.childData = true;
+            });
+        },
+        loadLeftInfo(mzghxh) {
+            let that = this;
+            axios
+                .get(config.url + "/outpatient?mzghxh=" + mzghxh)
+                .then(function (response) {
+                    that.treeData = response.data.data.menuData;
+                    that.patientInfo = response.data.data.patientInfo;
+                    console.log(response.data.data);
+                    console.log("Load left info");
+                    that.refreshLeft();
+                });
+        },
         loadFile(name) {
             // name为文件所在位置
             let xhr = new XMLHttpRequest(),
@@ -239,14 +246,16 @@ export default {
         },
         saveAsNewRecord() {
             const xml = this.$refs.sdeEditor.sde.exportXML();
+            let that = this;
             axios
                 .post(config.url + "/medical-record/insert", {
-                    patientCdno: this.patientInfo.Cdno,
+                    patientCdno: this.patientInfo.cdno,
                     recordType: this.currRecordType,
                     record: xml,
                 })
                 .then(function (response) {
                     console.log(response);
+                    that.loadLeftInfo(that.patientInfo.mzghxh);
                 });
         },
         loadRecord(id, name, type, department, IDNumber) {
