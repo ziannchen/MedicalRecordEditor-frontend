@@ -1,3 +1,4 @@
+
 <template>
     <Tree
         :data="data5"
@@ -17,7 +18,6 @@
     </Tree>
 </template>
 <script>
-import { EventBus } from "../event-bus.js";
 export default {
     props: {
         menuData: {
@@ -35,16 +35,7 @@ export default {
 
     methods: {
         handleLeftClick(data) {
-            console.log(111);
-            if (data.length != 0) {
-                console.log(data[0]);
-                EventBus.$emit("openRecord", {
-                    xml: data[0].xml,
-                    recordNo: data[0].recordNo,
-                    isRecord: data[0].isRecord,
-                    recordType: data[0].recordType,
-                });
-            }
+            this.$emit("loadRecord", data);
         },
         handleContextMenu(data) {
             this.contextData = data;

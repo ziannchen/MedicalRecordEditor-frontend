@@ -12,7 +12,11 @@
                 <div>身份证号： {{ patientInfo.sfzhm }}</div>
             </div>
             <div>
-                <leftMenu v-if="childData" v-bind:menuData="treeData">
+                <leftMenu
+                    v-if="childData"
+                    v-bind:menuData="treeData"
+                    @loadRecord="handleLoadRecord"
+                >
                 </leftMenu>
             </div>
         </div>
@@ -42,6 +46,17 @@
                     保存当前修改
                 </button>
                 <button v-on:click="saveAsNewRecord()">保存为新的病历</button>
+                <button v-on:click="getHTML()">11</button>
+                <el-button type="text" @click="dialogTableVisible = true"
+                    >打开预览</el-button
+                >
+                <el-dialog
+                    title="预览"
+                    :visible.sync="dialogTableVisible"
+                    contenteditable="false"
+                >
+                    <div v-html="rawHtml" contenteditable="false"></div>
+                </el-dialog>
                 <br />
             </div>
             <div style="margin: 0 auto">
@@ -54,7 +69,6 @@
 import leftMenu from "../components/leftMenu.vue";
 import sdeEditor from "../components/sdeEditor";
 import axios from "axios";
-import { EventBus } from "../event-bus.js";
 var config = require("../../config/api-config");
 export default {
     components: {
@@ -81,30 +95,34 @@ export default {
             currRecordNo: -1,
             currRecordType: "",
             isChanged: false,
+            rawHtml: "",
+            gridData: [
+                {
+                    date: "2016-05-02",
+                    name: "王小虎",
+                    address: "上海市普陀区金沙江路 1518 弄",
+                },
+                {
+                    date: "2016-05-04",
+                    name: "王小虎",
+                    address: "上海市普陀区金沙江路 1518 弄",
+                },
+                {
+                    date: "2016-05-01",
+                    name: "王小虎",
+                    address: "上海市普陀区金沙江路 1518 弄",
+                },
+                {
+                    date: "2016-05-03",
+                    name: "王小虎",
+                    address: "上海市普陀区金沙江路 1518 弄",
+                },
+            ],
+            dialogTableVisible: false,
         };
     },
     mounted() {
         this.dragControllerDiv();
-
-        EventBus.$on(
-            "openRecord",
-            ({ xml, recordNo, isRecord, recordType }) => {
-                this.import(xml);
-                this.currXml = xml;
-                this.currRecordNo = recordNo;
-                this.currIsRecord = isRecord;
-                this.currRecordType = recordType;
-            }
-        );
-
-        let that = this;
-        this.$refs.sdeEditor.sde.on("contentchange", function () {
-            console.log("编辑器内容发生改变");
-            console.log(that.$refs.sdeEditor.sde.exportXML());
-            that.isChanged =
-                that.$refs.sdeEditor.sde.exportXML() != that.currXml;
-            console.log(that.isChanged);
-        });
 
         let data = this.loadFile("../../config/api-config");
         console.log(data);
@@ -115,6 +133,15 @@ export default {
         this.loadLeftInfo(mzghxh);
     },
     methods: {
+        handleLoadRecord(data) {
+            this.import(data[0].xml);
+            this.currXml = data[0].xml;
+            this.currRecordNo = data[0].recordNo;
+            this.currIsRecord = data[0].isRecord;
+            this.currRecordType = data[0].recordType;
+            this.rawHtml = this.$refs.sdeEditor.getHTML();
+            // this.open();
+        },
         refreshLeft() {
             this.childData = false;
             this.$nextTick(() => {
@@ -389,4 +416,3 @@ export default {
     border: 1px solid rgb(142, 243, 182);
 }
 </style>
-
