@@ -35,7 +35,10 @@ export default {
 
     methods: {
         handleLeftClick(data) {
-            this.$emit("loadRecord", data);
+            if (data.length != 0) {
+                // console.log(data);
+                this.$emit("loadRecord", data);
+            }
         },
         handleContextMenu(data) {
             this.contextData = data;

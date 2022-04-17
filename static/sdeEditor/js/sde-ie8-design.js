@@ -22077,6 +22077,7 @@
                         a("downloadXML 不存在！");
                     }),
                     (e.prototype.createCtrl = function(e, t) {
+                        // console.log("ABC");
                         if (this[A.kernel].createCtrl)
                             return this[A.kernel].createCtrl(e, t);
                         a("createCtrl 不存在！");
@@ -25445,6 +25446,7 @@
                             null;
                     }),
                     (t.prototype.createCtrl = function(e, t) {
+                        // console.log("abc");
                         return this[h.__private__].editor ?
                             this[h.__private__].editor.createCtrl(e, t) :
                             null;
@@ -29270,356 +29272,356 @@
             print: null,
             revise: !1,
             user: { name: "sde", displayname: "SDE默认用户" },
-            default_open_toolbar: "sde-toolbar-editor",
-            toolbars: [{
-                    name: "sde-toolbar-file",
-                    title: "文件",
-                    items: [{
-                            name: "sde-toolbar-file-file",
-                            title: "文件管理",
-                            items: [
-                                { name: "openxml", title: "打开XML" },
-                                { name: "importxml", title: "下载XML" }
-                            ]
-                        },
-                        {
-                            name: "test",
-                            title: "测试扩展",
-                            items: [{
-                                    name: "tt",
-                                    title: "字符扩展",
-                                    render: function() {
-                                        return '<div class="panel-content-ctrl" title="字符扩展"  onclick="alert(\'字符扩展\')">\n            <div class="sde-icon sde-icon-openxml" style="width: 40px; height: 32px; float: none;"></div>\n            <div style="text-align: center;">字符扩展</div>\n          </div>';
-                                    }
-                                },
-                                {
-                                    name: "tt2",
-                                    title: "对象扩展",
-                                    render: function() {
-                                        var e = document.createElement("div");
-                                        return (
-                                            (e.innerHTML =
-                                                '<div class="panel-content-ctrl" title="对象扩展" >\n            <div class="sde-icon sde-icon-openxml" style="width: 40px; height: 32px; float: none;"></div>\n            <div style="text-align: center;">对象扩展</div>\n          </div>'),
-                                            (e = e.firstElementChild),
-                                            e.addEventListener(
-                                                "click",
-                                                function() {
-                                                    alert("对象扩展");
-                                                }
-                                            ),
-                                            e
-                                        );
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    name: "sde-toolbar-editor",
-                    title: "编辑",
-                    items: [{
-                            name: "sde-toolbar-editor-history",
-                            title: "历史记录",
-                            items: [
-                                { name: "drafts", title: "草稿箱" },
-                                { name: "undo", title: "撤销" },
-                                "|",
-                                { name: "redo", title: "恢复" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-editor-clipboard",
-                            title: "剪切板",
-                            items: [
-                                { name: "paste", title: "粘贴" },
-                                { name: "copy", title: "复制" },
-                                "|",
-                                { name: "cut", title: "剪切" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-editor-fonts",
-                            title: "字体",
-                            items: [
-                                { name: "fontfamily", title: "字体" },
-                                { name: "removeformat", title: "清除格式" },
-                                { name: "autotypeset", title: "自动格式化" },
-                                { name: "formatmatch", title: "格式刷" },
-                                "|",
-                                { name: "fontsize", title: "字号" },
-                                { name: "upsize", title: "增大字体" },
-                                { name: "downsize", title: "缩小字体" },
-                                { name: "subscript", title: "上标" },
-                                { name: "superscript", title: "下标" },
-                                { name: "bold", title: "加粗" },
-                                { name: "italic", title: "倾斜" },
-                                { name: "underline", title: "下划线" },
-                                { name: "strikethrough", title: "删除线" },
-                                { name: "forecolor", title: "文字颜色" },
-                                { name: "backcolor", title: "背景颜色" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-editor-paragraphs",
-                            title: "段落",
-                            items: [
-                                { name: "justifyleft", title: "向左对齐" },
-                                { name: "justifycenter", title: "居中对齐" },
-                                { name: "justifyright", title: "向右对齐" },
-                                { name: "justifyjustify", title: "两端对齐" },
-                                { name: "blockquote", title: "引用" },
-                                { name: "blockindent", title: "增加缩进" },
-                                { name: "blockoutdent", title: "减小缩进" },
-                                "|",
-                                { name: "unorderedlist", title: "无序编号" },
-                                { name: "orderedlist", title: "有序编号" },
-                                { name: "rowspacingtop", title: "段前距" },
-                                { name: "rowspacingbottom", title: "段后距" },
-                                { name: "lineheight", title: "行高" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    name: "sde-toolbar-insert",
-                    title: "插入",
-                    items: [{
-                            name: "sde-toolbar-insert-pagebreak",
-                            title: "分页符",
-                            items: [{ name: "pagebreak", title: "分页符" }]
-                        },
-                        {
-                            name: "sde-toolbar-insert-spechars",
-                            title: "字符",
-                            items: [{ name: "spechars", title: "字符" }]
-                        },
-                        {
-                            name: "sde-toolbar-insert-links",
-                            title: "链接",
-                            items: [
-                                { name: "insertlink", title: "添加链接" },
-                                "|",
-                                { name: "unlink", title: "取消链接" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-insert-images",
-                            title: "图片",
-                            items: [
-                                { name: "insertimage", title: "图片管理" },
-                                { name: "simpleupload", title: "插入" },
-                                { name: "emotion", title: "表情" },
-                                { name: "vectordiagram", title: "矢量图" },
-                                "|",
-                                { name: "snapscreen", title: "截屏" },
-                                { name: "scrawl", title: "涂鸦" },
-                                { name: "qrcode", title: "二维码" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-insert-map",
-                            title: "地图",
-                            items: [{ name: "map", title: "地图" }]
-                        },
-                        {
-                            name: "sde-toolbar-insert-insertcode",
-                            title: "代码",
-                            items: [{ name: "insertcode", title: "代码" }]
-                        },
-                        {
-                            name: "sde-toolbar-insert-table",
-                            title: "表格",
-                            items: [{ name: "inserttable", title: "表格" }]
-                        },
-                        {
-                            name: "sde-toolbar-insert-kityformula",
-                            title: "公式",
-                            items: [{ name: "kityformula", title: "公式" }]
-                        },
-                        {
-                            name: "sde-toolbar-insert-blockcomment",
-                            title: "批注",
-                            items: [{ name: "blockcomment", title: "批注" }]
-                        }
-                    ]
-                },
-                {
-                    name: "sde-toolbar-table",
-                    title: "表格",
-                    items: [{
-                            name: "sde-toolbar-table-table",
-                            title: "表格",
-                            items: [
-                                { name: "inserttable", title: "插入表格" },
-                                { name: "deletetable", title: "删除表格" },
-                                { name: "insertrow", title: "插入行" },
-                                { name: "insertcol", title: "插入列" },
-                                "|",
-                                { name: "deleterow", title: "删除行" },
-                                { name: "deletecol", title: "删除列" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-table-merge",
-                            title: "合并单元格",
-                            items: [
-                                { name: "mergecells", title: "合并单元格" },
-                                { name: "mergedown", title: "向下合并单元格" },
-                                { name: "mergeright", title: "向右合并单元格" },
-                                "|",
-                                { name: "splittocells", title: "拆分单元格" },
-                                {
-                                    name: "splittocols",
-                                    title: "单元格拆分成列"
-                                },
-                                { name: "splittorows", title: "单元格拆分成行" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-table-alignmerge",
-                            title: "对齐方向",
-                            items: [
-                                { name: "valign-top", title: "顶端对齐" },
-                                { name: "valign-middle", title: "垂直居中" },
-                                { name: "valign-bottom", title: "底端对齐" },
-                                "|",
-                                { name: "align-left", title: "左对齐" },
-                                { name: "align-center", title: "居中" },
-                                { name: "align-right", title: "右对齐" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-table-style",
-                            title: "表格线样式",
-                            items: [{
-                                    name: "tablestyle",
-                                    title: "表格样式",
-                                    items: [{
-                                            title: "隐藏表格线",
-                                            name: "tb-hide"
-                                        },
-                                        { title: "设为实线", name: "tb-solid" },
-                                        { title: "设为虚线", name: "tb-dotted" }
-                                    ]
-                                },
-                                {
-                                    name: "tablelowerframeline",
-                                    title: "下框线"
-                                },
-                                {
-                                    name: "tableupperframeline",
-                                    title: "上框线"
-                                },
-                                { name: "tableleftframeline", title: "左框线" },
-                                {
-                                    name: "tablerightframeline",
-                                    title: "右框线"
-                                },
-                                { name: "tablenoborder", title: "无框线" },
-                                "|",
-                                {
-                                    name: "tableinternaltransverseline",
-                                    title: "内部横线"
-                                },
-                                {
-                                    name: "tableinternalverticalline",
-                                    title: "内部竖线"
-                                },
-                                {
-                                    name: "tableinsideborder",
-                                    title: "内部框线"
-                                },
-                                {
-                                    name: "tablelateralframeline",
-                                    title: "外侧框线"
-                                },
-                                {
-                                    name: "tableallframelines",
-                                    title: "所有框线"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    name: "sde-toolbar-views",
-                    title: "视图",
-                    items: [{
-                            name: "sde-toolbar-views-directory",
-                            title: "目录",
-                            items: [{ name: "directory", title: "显示目录" }]
-                        },
-                        {
-                            name: "sde-toolbar-views-normalshow",
-                            title: "整洁显示",
-                            items: [{ name: "normalshow", title: "整洁显示" }]
-                        },
-                        {
-                            name: "sde-toolbar-views-preview",
-                            title: "预览文档",
-                            items: [{ name: "preview", title: "预览文档" }]
-                        }
-                    ]
-                },
-                {
-                    name: "sde-toolbar-tools",
-                    title: "工具",
-                    items: [{
-                            name: "sde-toolbar-tools-drafts",
-                            title: "草稿箱",
-                            items: [{ name: "drafts", title: "草稿箱" }]
-                        },
-                        {
-                            name: "sde-toolbar-tools-print",
-                            title: "打印",
-                            items: [{ name: "print", title: "打印" }]
-                        },
-                        {
-                            name: "sde-toolbar-tools-search",
-                            title: "搜索",
-                            items: [
-                                { name: "searchreplace", title: "查找替换" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-tools-wordcount",
-                            title: "字数统计",
-                            items: [{ name: "wordcount", title: "字数统计" }]
-                        }
-                    ]
-                },
-                {
-                    name: "sde-toolbar-controls",
-                    title: "病历控件",
-                    items: [{
-                            name: "sde-toolbar-controls-sdetemplate",
-                            title: "控件库",
-                            items: [{ name: "sdetemplate", title: "控件库" }]
-                        },
-                        {
-                            name: "sde-toolbar-controls-controls",
-                            title: "新增控件",
-                            items: [
-                                { name: "sdectrllabel", title: "标签控件" },
-                                { name: "sdectrltext", title: "单行文本" },
-                                { name: "sdectrlsection", title: "文档段" },
-                                { name: "sdectrlsummary", title: "文档节" },
-                                "|",
-                                { name: "sdectrlselect", title: "下拉选择" },
-                                { name: "sdectrldate", title: "日期控件" },
-                                { name: "sdectrlradio", title: "单选框" },
-                                { name: "sdectrlcbx", title: "复选框" }
-                            ]
-                        },
-                        {
-                            name: "sde-toolbar-controls-sdemode",
-                            title: "模式设置",
-                            items: [{ name: "sdemode", title: "模式设置" }]
-                        }
-                    ]
-                }
-            ]
+            default_open_toolbar: "sde-toolbar-editor"
+                // toolbars: [{
+                //         name: "sde-toolbar-file",
+                //         title: "文件",
+                //         items: [{
+                //                 name: "sde-toolbar-file-file",
+                //                 title: "文件管理",
+                //                 items: [
+                //                     { name: "openxml", title: "打开XML" },
+                //                     { name: "importxml", title: "下载XML" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "test",
+                //                 title: "测试扩展",
+                //                 items: [{
+                //                         name: "tt",
+                //                         title: "字符扩展",
+                //                         render: function() {
+                //                             return '<div class="panel-content-ctrl" title="字符扩展"  onclick="alert(\'字符扩展\')">\n            <div class="sde-icon sde-icon-openxml" style="width: 40px; height: 32px; float: none;"></div>\n            <div style="text-align: center;">字符扩展</div>\n          </div>';
+                //                         }
+                //                     },
+                //                     {
+                //                         name: "tt2",
+                //                         title: "对象扩展",
+                //                         render: function() {
+                //                             var e = document.createElement("div");
+                //                             return (
+                //                                 (e.innerHTML =
+                //                                     '<div class="panel-content-ctrl" title="对象扩展" >\n            <div class="sde-icon sde-icon-openxml" style="width: 40px; height: 32px; float: none;"></div>\n            <div style="text-align: center;">对象扩展</div>\n          </div>'),
+                //                                 (e = e.firstElementChild),
+                //                                 e.addEventListener(
+                //                                     "click",
+                //                                     function() {
+                //                                         alert("对象扩展");
+                //                                     }
+                //                                 ),
+                //                                 e
+                //                             );
+                //                         }
+                //                     }
+                //                 ]
+                //             }
+                //         ]
+                //     },
+                //     {
+                //         name: "sde-toolbar-editor",
+                //         title: "编辑",
+                //         items: [{
+                //                 name: "sde-toolbar-editor-history",
+                //                 title: "历史记录",
+                //                 items: [
+                //                     { name: "drafts", title: "草稿箱" },
+                //                     { name: "undo", title: "撤销" },
+                //                     "|",
+                //                     { name: "redo", title: "恢复" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-editor-clipboard",
+                //                 title: "剪切板",
+                //                 items: [
+                //                     { name: "paste", title: "粘贴" },
+                //                     { name: "copy", title: "复制" },
+                //                     "|",
+                //                     { name: "cut", title: "剪切" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-editor-fonts",
+                //                 title: "字体",
+                //                 items: [
+                //                     { name: "fontfamily", title: "字体" },
+                //                     { name: "removeformat", title: "清除格式" },
+                //                     { name: "autotypeset", title: "自动格式化" },
+                //                     { name: "formatmatch", title: "格式刷" },
+                //                     "|",
+                //                     { name: "fontsize", title: "字号" },
+                //                     { name: "upsize", title: "增大字体" },
+                //                     { name: "downsize", title: "缩小字体" },
+                //                     { name: "subscript", title: "上标" },
+                //                     { name: "superscript", title: "下标" },
+                //                     { name: "bold", title: "加粗" },
+                //                     { name: "italic", title: "倾斜" },
+                //                     { name: "underline", title: "下划线" },
+                //                     { name: "strikethrough", title: "删除线" },
+                //                     { name: "forecolor", title: "文字颜色" },
+                //                     { name: "backcolor", title: "背景颜色" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-editor-paragraphs",
+                //                 title: "段落",
+                //                 items: [
+                //                     { name: "justifyleft", title: "向左对齐" },
+                //                     { name: "justifycenter", title: "居中对齐" },
+                //                     { name: "justifyright", title: "向右对齐" },
+                //                     { name: "justifyjustify", title: "两端对齐" },
+                //                     { name: "blockquote", title: "引用" },
+                //                     { name: "blockindent", title: "增加缩进" },
+                //                     { name: "blockoutdent", title: "减小缩进" },
+                //                     "|",
+                //                     { name: "unorderedlist", title: "无序编号" },
+                //                     { name: "orderedlist", title: "有序编号" },
+                //                     { name: "rowspacingtop", title: "段前距" },
+                //                     { name: "rowspacingbottom", title: "段后距" },
+                //                     { name: "lineheight", title: "行高" }
+                //                 ]
+                //             }
+                //         ]
+                //     },
+                //     {
+                //         name: "sde-toolbar-insert",
+                //         title: "插入",
+                //         items: [{
+                //                 name: "sde-toolbar-insert-pagebreak",
+                //                 title: "分页符",
+                //                 items: [{ name: "pagebreak", title: "分页符" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-spechars",
+                //                 title: "字符",
+                //                 items: [{ name: "spechars", title: "字符" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-links",
+                //                 title: "链接",
+                //                 items: [
+                //                     { name: "insertlink", title: "添加链接" },
+                //                     "|",
+                //                     { name: "unlink", title: "取消链接" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-images",
+                //                 title: "图片",
+                //                 items: [
+                //                     { name: "insertimage", title: "图片管理" },
+                //                     { name: "simpleupload", title: "插入" },
+                //                     { name: "emotion", title: "表情" },
+                //                     { name: "vectordiagram", title: "矢量图" },
+                //                     "|",
+                //                     { name: "snapscreen", title: "截屏" },
+                //                     { name: "scrawl", title: "涂鸦" },
+                //                     { name: "qrcode", title: "二维码" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-map",
+                //                 title: "地图",
+                //                 items: [{ name: "map", title: "地图" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-insertcode",
+                //                 title: "代码",
+                //                 items: [{ name: "insertcode", title: "代码" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-table",
+                //                 title: "表格",
+                //                 items: [{ name: "inserttable", title: "表格" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-kityformula",
+                //                 title: "公式",
+                //                 items: [{ name: "kityformula", title: "公式" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-insert-blockcomment",
+                //                 title: "批注",
+                //                 items: [{ name: "blockcomment", title: "批注" }]
+                //             }
+                //         ]
+                //     },
+                //     {
+                //         name: "sde-toolbar-table",
+                //         title: "表格",
+                //         items: [{
+                //                 name: "sde-toolbar-table-table",
+                //                 title: "表格",
+                //                 items: [
+                //                     { name: "inserttable", title: "插入表格" },
+                //                     { name: "deletetable", title: "删除表格" },
+                //                     { name: "insertrow", title: "插入行" },
+                //                     { name: "insertcol", title: "插入列" },
+                //                     "|",
+                //                     { name: "deleterow", title: "删除行" },
+                //                     { name: "deletecol", title: "删除列" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-table-merge",
+                //                 title: "合并单元格",
+                //                 items: [
+                //                     { name: "mergecells", title: "合并单元格" },
+                //                     { name: "mergedown", title: "向下合并单元格" },
+                //                     { name: "mergeright", title: "向右合并单元格" },
+                //                     "|",
+                //                     { name: "splittocells", title: "拆分单元格" },
+                //                     {
+                //                         name: "splittocols",
+                //                         title: "单元格拆分成列"
+                //                     },
+                //                     { name: "splittorows", title: "单元格拆分成行" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-table-alignmerge",
+                //                 title: "对齐方向",
+                //                 items: [
+                //                     { name: "valign-top", title: "顶端对齐" },
+                //                     { name: "valign-middle", title: "垂直居中" },
+                //                     { name: "valign-bottom", title: "底端对齐" },
+                //                     "|",
+                //                     { name: "align-left", title: "左对齐" },
+                //                     { name: "align-center", title: "居中" },
+                //                     { name: "align-right", title: "右对齐" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-table-style",
+                //                 title: "表格线样式",
+                //                 items: [{
+                //                         name: "tablestyle",
+                //                         title: "表格样式",
+                //                         items: [{
+                //                                 title: "隐藏表格线",
+                //                                 name: "tb-hide"
+                //                             },
+                //                             { title: "设为实线", name: "tb-solid" },
+                //                             { title: "设为虚线", name: "tb-dotted" }
+                //                         ]
+                //                     },
+                //                     {
+                //                         name: "tablelowerframeline",
+                //                         title: "下框线"
+                //                     },
+                //                     {
+                //                         name: "tableupperframeline",
+                //                         title: "上框线"
+                //                     },
+                //                     { name: "tableleftframeline", title: "左框线" },
+                //                     {
+                //                         name: "tablerightframeline",
+                //                         title: "右框线"
+                //                     },
+                //                     { name: "tablenoborder", title: "无框线" },
+                //                     "|",
+                //                     {
+                //                         name: "tableinternaltransverseline",
+                //                         title: "内部横线"
+                //                     },
+                //                     {
+                //                         name: "tableinternalverticalline",
+                //                         title: "内部竖线"
+                //                     },
+                //                     {
+                //                         name: "tableinsideborder",
+                //                         title: "内部框线"
+                //                     },
+                //                     {
+                //                         name: "tablelateralframeline",
+                //                         title: "外侧框线"
+                //                     },
+                //                     {
+                //                         name: "tableallframelines",
+                //                         title: "所有框线"
+                //                     }
+                //                 ]
+                //             }
+                //         ]
+                //     },
+                //     {
+                //         name: "sde-toolbar-views",
+                //         title: "视图",
+                //         items: [{
+                //                 name: "sde-toolbar-views-directory",
+                //                 title: "目录",
+                //                 items: [{ name: "directory", title: "显示目录" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-views-normalshow",
+                //                 title: "整洁显示",
+                //                 items: [{ name: "normalshow", title: "整洁显示" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-views-preview",
+                //                 title: "预览文档",
+                //                 items: [{ name: "preview", title: "预览文档" }]
+                //             }
+                //         ]
+                //     },
+                //     {
+                //         name: "sde-toolbar-tools",
+                //         title: "工具",
+                //         items: [{
+                //                 name: "sde-toolbar-tools-drafts",
+                //                 title: "草稿箱",
+                //                 items: [{ name: "drafts", title: "草稿箱" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-tools-print",
+                //                 title: "打印",
+                //                 items: [{ name: "print", title: "打印" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-tools-search",
+                //                 title: "搜索",
+                //                 items: [
+                //                     { name: "searchreplace", title: "查找替换" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-tools-wordcount",
+                //                 title: "字数统计",
+                //                 items: [{ name: "wordcount", title: "字数统计" }]
+                //             }
+                //         ]
+                //     },
+                //     {
+                //         name: "sde-toolbar-controls",
+                //         title: "病历控件",
+                //         items: [{
+                //                 name: "sde-toolbar-controls-sdetemplate",
+                //                 title: "控件库",
+                //                 items: [{ name: "sdetemplate", title: "控件库" }]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-controls-controls",
+                //                 title: "新增控件",
+                //                 items: [
+                //                     { name: "sdectrllabel", title: "标签控件" },
+                //                     { name: "sdectrltext", title: "单行文本" },
+                //                     { name: "sdectrlsection", title: "文档段" },
+                //                     { name: "sdectrlsummary", title: "文档节" },
+                //                     "|",
+                //                     { name: "sdectrlselect", title: "下拉选择" },
+                //                     { name: "sdectrldate", title: "日期控件" },
+                //                     { name: "sdectrlradio", title: "单选框" },
+                //                     { name: "sdectrlcbx", title: "复选框" }
+                //                 ]
+                //             },
+                //             {
+                //                 name: "sde-toolbar-controls-sdemode",
+                //                 title: "模式设置",
+                //                 items: [{ name: "sdemode", title: "模式设置" }]
+                //             }
+                //         ]
+                //     }
+                // ]
         };
     },
     function(e, t, n) {
@@ -29718,6 +29720,7 @@
         e.exports = {
             name: "sdectrltext",
             plugin: function(e) {
+                // console.log(e);
                 var t = this.name,
                     n = A["default"].getDialog(
                         e,
@@ -61078,19 +61081,118 @@
     },
     function(e, t, n) {
         "use strict";
+        // console.log("e");
+        // console.log(e);
+        // console.log("t");
+        // console.log(t);
+        // console.log("n");
+        // console.log(n);
 
         function r(e) {
             return e && e.__esModule ? e : { default: e };
         }
         var i = n(11),
-            A = (r(i), n(15)),
-            a = (r(A), n(2)),
-            o = (r(a), n(3));
-        r(o);
+            A = r(i),
+            a = n(15),
+            o = r(a),
+            s = n(2),
+            l = r(s),
+            d = n(3);
+        r(d);
+        // e.exports = {
+        //     name: "sdectrlsection",
+        //     plugin: function(e) {
+        //         console.log("该功能尚在内部测试阶段！");
+        //     }
+        // };
         e.exports = {
             name: "sdectrlsection",
             plugin: function(e) {
-                console.log("该功能尚在内部测试阶段！");
+                // console.log(e);
+                var t = this.name,
+                    n = A["default"].getDialog(
+                        e,
+                        t,
+                        "section/index.html",
+                        "文档段",
+                        A["default"].getWidthHeight({ w: 600, h: 480 }), [{
+                                className: "edui-okbutton",
+                                label: "确定",
+                                onclick: function() {
+                                    n.close(!0);
+                                }
+                            },
+                            {
+                                className: "edui-cancelbutton",
+                                label: "取消",
+                                onclick: function() {
+                                    n.close(!1);
+                                }
+                            }
+                        ]
+                    );
+                e.commands[t] = {
+                    execCommand: function() {
+                        n.render(), n.open();
+                    }
+                };
+                var r = new baidu.editor.ui.Popup({
+                    editor: e,
+                    content: "",
+                    className: "edui-bubble",
+                    _edit: function() {
+                        var n = r.anchorEl,
+                            i = e.__sde__.getControlByEl(n);
+                        (baidu.editor.plugins[t].sdectrl = i),
+                        e.execCommand(t),
+                            this.hide();
+                    },
+                    _delete: function(e) {
+                        var t = this;
+                        o["default"].confirm.call(
+                            t.anchorEl,
+                            "是否删除？",
+                            function() {
+                                var e = t.anchorEl;
+                                l["default"].remove(e, !1, !0), t.hide();
+                            },
+                            function() {
+                                t.hide();
+                            }
+                        );
+                    }
+                });
+                r.render(),
+                    e.addListener("mouseover", function(e, t) {
+                        if ("DESIGN" === this.__sde__.mode()) {
+                            var n = l["default"].formatEvt(t),
+                                i = (n.evt, n.target);
+                            if (!l["default"].isBody(i) &&
+                                !l["default"].isHtml(i)
+                            ) {
+                                var A = l["default"].findParentCtrlNode(i);
+                                if (
+                                    null !== A &&
+                                    (r.hide(),
+                                        "text" === A.getAttribute("sde-type"))
+                                ) {
+                                    var a = A.querySelector(".sde-value"),
+                                        o = a.getAttribute("title") || "文档段",
+                                        s = r.formatHtml(
+                                            "<nobr> " +
+                                            o +
+                                            ': <span onclick=$$._edit() class="edui-clickable">编辑</span>&nbsp;&nbsp;<span onclick=$$._delete() class="edui-clickable">删除</span></nobr>'
+                                        );
+                                    s
+                                        ?
+                                        ((r.getDom("content").innerHTML = s),
+                                            (r.anchorEl = A),
+                                            r.showAnchor(r.anchorEl)) :
+                                        r.hide();
+                                }
+                            }
+                        }
+                    });
             }
         };
     },
@@ -61396,7 +61498,16 @@
                                 "insertHtml",
                                 r.outerHTML
                             );
+                        // console.log("create ctrl this");
+                        // console.log(this);
+                        // console.log("t");
+                        // console.log(t);
+                        // console.log("r");
+                        // console.log(r);
+                        // console.log("A");
+                        // console.log(A);
                         var s = t.createCtrl(r, A);
+                        // console.log(s);
                         s.refreshData(!0),
                             e.execCommand(
                                 "insertHtml",
