@@ -1,81 +1,68 @@
 <template>
     <div class="box" ref="box" @contextmenu.prevent>
         <div class="menu" id="app" ref="left" @contextmenu.prevent>
-            <div>
-                <div>门诊挂号序号： {{ patientInfo.mzghxh }}</div>
-                <div>姓名：{{ patientInfo.xm }}</div>
-                <div>性别： {{ patientInfo.xb }}</div>
-                <div>出生时间： {{ patientInfo.cssj }}</div>
-                <div>年龄： {{ patientInfo.nl }}</div>
-                <div>科别： {{ patientInfo.kb }}</div>
-                <div>病人编号： {{ patientInfo.cdno }}</div>
-                <div>身份证号： {{ patientInfo.sfzhm }}</div>
-            </div>
-            <div>
-                <leftMenu
-                    v-if="childData"
-                    v-bind:menuData="treeData"
-                    @loadRecord="handleLoadRecord"
-                >
-                </leftMenu>
-            </div>
+            <el-descriptions title="用户信息" :column="1">
+                <el-descriptions-item label="门诊挂号序号">
+                    {{ patientInfo.mzghxh }}
+                </el-descriptions-item>
+                <el-descriptions-item label="姓名">
+                    {{ patientInfo.xm }}
+                </el-descriptions-item>
+                <el-descriptions-item label="性别">
+                    {{ patientInfo.xb }}
+                </el-descriptions-item>
+                <el-descriptions-item label="出生时间">
+                    {{ patientInfo.cssj }}
+                </el-descriptions-item>
+                <el-descriptions-item label="年龄">
+                    {{ patientInfo.nl }}
+                </el-descriptions-item>
+                <el-descriptions-item label="科别">
+                    {{ patientInfo.kb }}
+                </el-descriptions-item>
+                <el-descriptions-item label="病人编号">
+                    {{ patientInfo.cdno }}
+                </el-descriptions-item>
+                <el-descriptions-item label="身份证号">
+                    {{ patientInfo.sfzhm }}
+                </el-descriptions-item>
+            </el-descriptions>
+            <el-tree :data="treeData" @node-click="handleNodeClick"></el-tree>
         </div>
         <div class="resize" title="收缩侧边栏" ref="resize"></div>
         <div class="editor">
             <div class="toolbars">
-                <b>修改模式：</b>
-                <button v-on:click="changeMode('DESIGN')">
-                    设置为设计模式
-                </button>
-                <button v-on:click="changeMode('EDITOR')">
-                    设置为编辑模式
-                </button>
-                <button v-on:click="changeMode('STRICT')">
-                    设置为严格（表单）模式
-                </button>
-                <button v-on:click="changeMode('READONLY')">
-                    设置为只读模式
-                </button>
-                <button v-on:click="getMode()">获取当前模式</button>
-                <br />
-                <b>内部方法：</b>
+                <!-- <b>内部方法：</b>
                 <button
-                    v-bind:disabled="!currIsRecord || !isChanged"
+                    v-bind:disabled="!currIsRecord"
                     v-on:click="saveOnOldRecord()"
                 >
                     保存当前修改
-                </button>
+                </button> -->
                 <button v-on:click="saveAsNewRecord()">保存为新的病历</button>
-
-                <el-dialog
-                    ref="dialog"
-                    title="预览"
-                    :visible.sync="dialogVisible"
-                >
-                    <sde-editor
-                        ref="sdeEditor-preview"
-                        :defaultXML="currPreviewXml"
-                        :defaultMode="previewMode"
-                    ></sde-editor>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false"
-                            >取 消</el-button
-                        >
-                        <el-button
-                            type="primary"
-                            @click="handleUsePreviewRecord()"
-                            >确 定</el-button
-                        >
-                    </span>
-                </el-dialog>
-                <br />
             </div>
             <div style="margin: 0 auto">
                 <sde-editor
                     ref="sdeEditor"
                     :defaultToolbars="outpatientToolbars"
+                    :defaultMode="editMode"
                 ></sde-editor>
             </div>
+            <el-dialog ref="dialog" title="预览" :visible.sync="dialogVisible">
+                <sde-editor
+                    ref="sdeEditor-preview"
+                    :defaultXML="currPreviewXml"
+                    :defaultMode="previewMode"
+                ></sde-editor>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">
+                        取 消
+                    </el-button>
+                    <el-button type="primary" @click="handleUsePreviewRecord()"
+                        >确 定
+                    </el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -113,62 +100,8 @@ export default {
             isChanged: false,
             dialogVisible: false,
             previewMode: "READONLY",
+            editMode: "STRICT",
             outpatientToolbars: [
-                {
-                    name: "sde-toolbar-file",
-                    title: "文件",
-                    items: [
-                        {
-                            name: "sde-toolbar-file-file",
-                            title: "文件管理",
-                            items: [
-                                {
-                                    name: "openxml",
-                                    title: "打开XML",
-                                },
-                                {
-                                    name: "importxml",
-                                    title: "下载XML",
-                                },
-                            ],
-                        },
-                        {
-                            name: "test",
-                            title: "测试扩展",
-                            items: [
-                                {
-                                    name: "tt",
-                                    title: "字符扩展", //这里是扩展toolbar，扩展有两种方式：方式一：
-                                    render: function () {
-                                        return `<div class="panel-content-ctrl" title="字符扩展"  onclick="alert('字符扩展')">
-    <div class="sde-icon sde-icon-openxml" style="width: 40px; height: 32px; float: none;"></div>
-    <div style="text-align: center;">字符扩展</div>
-  </div>`;
-                                    },
-                                },
-                                {
-                                    name: "tt2",
-                                    title: "对象扩展", //方式二：（推荐）
-                                    render: function () {
-                                        let div = document.createElement("div");
-                                        div.innerHTML = `<div class="panel-content-ctrl" title="对象扩展" >
-    <div class="sde-icon sde-icon-openxml" style="width: 40px; height: 32px; float: none;"></div>
-    <div style="text-align: center;">对象扩展</div>
-  </div>`;
-                                        div = div.firstElementChild;
-                                        div.addEventListener(
-                                            "click",
-                                            function () {
-                                                alert("对象扩展");
-                                            }
-                                        );
-                                        return div;
-                                    },
-                                },
-                            ],
-                        },
-                    ],
-                },
                 {
                     name: "sde-toolbar-editor",
                     title: "编辑",
@@ -717,66 +650,74 @@ export default {
                         },
                     ],
                 },
+            ],
+            treeData: [
                 {
-                    name: "sde-toolbar-controls",
-                    title: "病历控件",
-                    items: [
+                    label: "",
+                    children: [
                         {
-                            name: "sde-toolbar-controls-sdetemplate",
-                            title: "控件库",
-                            items: [
+                            label: "",
+                            children: [],
+                            isRecord: true,
+                            recordNo: 0,
+                            recordType: "",
+                            templateNo: 0,
+                            xml: "",
+                        },
+                    ],
+                },
+            ],
+            data: [
+                {
+                    label: "",
+                    children: [
+                        {
+                            label: "二级 1-1",
+                            children: [
                                 {
-                                    name: "sdetemplate",
-                                    title: "控件库",
+                                    label: "三级 1-1-1",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    label: "一级 2",
+                    children: [
+                        {
+                            label: "二级 2-1",
+                            children: [
+                                {
+                                    label: "三级 2-1-1",
                                 },
                             ],
                         },
                         {
-                            name: "sde-toolbar-controls-controls",
-                            title: "新增控件",
-                            items: [
+                            label: "二级 2-2",
+                            children: [
                                 {
-                                    name: "sdectrllabel",
-                                    title: "标签控件",
+                                    label: "三级 2-2-1",
                                 },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    label: "一级 3",
+                    children: [
+                        {
+                            label: "二级 3-1",
+                            children: [
                                 {
-                                    name: "sdectrltext",
-                                    title: "单行文本",
-                                },
-                                {
-                                    name: "sdectrlsection",
-                                    title: "文档段",
-                                },
-                                {
-                                    name: "sdectrlsummary",
-                                    title: "文档节",
-                                },
-                                "|",
-                                {
-                                    name: "sdectrlselect",
-                                    title: "下拉选择",
-                                },
-                                {
-                                    name: "sdectrldate",
-                                    title: "日期控件",
-                                },
-                                {
-                                    name: "sdectrlradio",
-                                    title: "单选框",
-                                },
-                                {
-                                    name: "sdectrlcbx",
-                                    title: "复选框",
+                                    label: "三级 3-1-1",
                                 },
                             ],
                         },
                         {
-                            name: "sde-toolbar-controls-sdemode",
-                            title: "模式设置",
-                            items: [
+                            label: "二级 3-2",
+                            children: [
                                 {
-                                    name: "sdemode",
-                                    title: "模式设置",
+                                    label: "三级 3-2-1",
                                 },
                             ],
                         },
@@ -787,23 +728,18 @@ export default {
     },
     mounted() {
         this.dragControllerDiv();
-
-        let data = this.loadFile("../../config/api-config");
-        console.log(data);
     },
     created() {
         var mzghxh = this.$route.params.id;
-        console.log(this.$route.params.id);
+        // console.log(this.$route.params.id);
         this.loadLeftInfo(mzghxh);
     },
     methods: {
-        handleLoadRecord(data) {
-            console.log("handle left click");
-            this.currPreviewXml = data[0].xml;
-            this.currRecordNo = data[0].recordNo;
-            console.log(this.currRecordNo);
-            this.currIsRecord = data[0].isRecord;
-            this.currRecordType = data[0].recordType;
+        handleNodeClick(data) {
+            if (data.children != undefined) {
+                return;
+            }
+            this.currPreviewXml = data.xml;
             this.dialogVisible = true;
         },
         handleUsePreviewRecord() {
@@ -825,19 +761,8 @@ export default {
                 .then(function (response) {
                     that.treeData = response.data.data.menuData;
                     that.patientInfo = response.data.data.patientInfo;
-                    console.log(response.data.data);
                     console.log("Load left info");
-                    that.refreshLeft();
                 });
-        },
-        loadFile(name) {
-            // name为文件所在位置
-            let xhr = new XMLHttpRequest(),
-                okStatus = document.location.protocol === "file:" ? 0 : 200;
-            xhr.open("GET", name, false);
-            xhr.overrideMimeType("text/html;charset=utf-8"); //默认为utf-8
-            xhr.send(null);
-            return xhr.status === okStatus ? xhr.responseText : null;
         },
         dragControllerDiv() {
             var resize = document.getElementsByClassName("resize");
@@ -884,9 +809,6 @@ export default {
                     return false;
                 };
             }
-        },
-        execCommand(cmd) {
-            this.$refs.sdeEditor.execCommand(cmd);
         },
         changeMode(mode) {
             this.$refs.sdeEditor.mode(mode);
@@ -946,8 +868,14 @@ export default {
             let that = this;
             axios
                 .post(config.url + "/medical-record/insert", {
+                    mzghxh: this.patientInfo.mzghxh,
+                    patientName: this.patientInfo.xm,
+                    patientSex: this.patientInfo.xb,
+                    patientBirthday: this.patientInfo.cssj,
+                    department: this.patientInfo.kb,
                     patientCdno: this.patientInfo.cdno,
                     recordType: this.currRecordType,
+                    update_by: this.patientInfo.df,
                     record: xml,
                 })
                 .then(function (response) {
@@ -1042,7 +970,6 @@ export default {
     width: calc(20% - 3px); /*左侧初始化宽度*/
     height: 100%;
     float: left;
-    background-color: #f0eded;
     user-select: none;
     overflow-y: scroll;
 }

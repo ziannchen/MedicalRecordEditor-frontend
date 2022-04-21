@@ -1,66 +1,73 @@
 <template>
     <div class="box" ref="box" @contextmenu.prevent>
-        <div class="editor">
-            <div class="toolbars">
-                <b>修改模式：</b>
-                <button v-on:click="changeMode('DESIGN')">
-                    设置为设计模式
-                </button>
-                <button v-on:click="changeMode('EDITOR')">
-                    设置为编辑模式
-                </button>
-                <button v-on:click="changeMode('STRICT')">
-                    设置为严格（表单）模式
-                </button>
-                <button v-on:click="changeMode('READONLY')">
-                    设置为只读模式
-                </button>
-                <button v-on:click="getMode()">获取当前模式</button>
-                <br />
-                <b>内部方法：</b>
-                <button v-on:click="saveTemplate()">保存当前模板</button>
-                ><input
-                    type="text"
-                    v-model="templateTypeToSave"
-                    placeholder="请输入模板名称"
-                />
+        <el-row :gutter="20">
+            <el-col :span="17">
+                <div style="margin: 0 auto">
+                    <sde-editor
+                        ref="sdeEditor"
+                        :defaultToolbars="templateEditToolbars"
+                    >
+                    </sde-editor>
+                </div>
+            </el-col>
+            <el-col :span="6">
+                <el-form
+                    :model="ruleForm"
+                    :rules="rules"
+                    ref="ruleForm"
+                    label-width="100px"
+                    class="ruleForm"
+                >
+                    <el-form-item label="模板名称" prop="name">
+                        <el-input v-model="ruleForm.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="使用部门" prop="department">
+                        <el-input v-model="ruleForm.department"></el-input>
+                    </el-form-item>
+                    <el-form-item label="类别" prop="usageType">
+                        <el-radio-group v-model="ruleForm.usageType">
+                            <el-radio label="个人"></el-radio>
+                            <el-radio label="部门"></el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="制作者" prop="creater">
+                        <el-input v-model="ruleForm.creater"></el-input>
+                    </el-form-item>
+                    <el-form-item label="录入码" prop="luruma">
+                        <el-input v-model="ruleForm.luruma"></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态" prop="status">
+                        <el-select
+                            v-model="ruleForm.status"
+                            placeholder="请选择模板状态"
+                        >
+                            <el-option label="正常" value="正常"></el-option>
+                            <el-option
+                                label="暂停使用"
+                                value="暂停使用"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="说明" prop="desc">
+                        <el-input
+                            type="textarea"
+                            v-model="ruleForm.desc"
+                        ></el-input>
+                    </el-form-item>
 
-                ><input
-                    type="text"
-                    v-model="templateNo"
-                    placeholder="请输入模板编号"
-                />
-                ><input
-                    type="text"
-                    v-model="department"
-                    placeholder="请输入模板科室"
-                />
-                ><input type="text" v-model="usageType" placeholder="类别" />
-                ><input type="text" v-model="creater" placeholder="制作人" />
-                ><input
-                    type="text"
-                    v-model="creationTime"
-                    placeholder="制作日期"
-                />
-                ><input type="text" v-model="luruma" placeholder="录入码" />
-                ><input type="text" v-model="status" placeholder="状态" />
-                ><input type="text" v-model="comment" placeholder="说明" />
-
-                <button v-on:click="getTemplate()">加载模板</button>
-                ><input
-                    type="text"
-                    v-model="templateTypeToGet"
-                    placeholder="请输入模板名称"
-                />
-                <br />
-            </div>
-            <div style="margin: 0 auto">
-                <sde-editor
-                    ref="sdeEditor"
-                    :defaultToolbars="templateEditToolbars"
-                ></sde-editor>
-            </div>
-        </div>
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            @click="submitForm('ruleForm')"
+                            >立即创建</el-button
+                        >
+                        <el-button @click="resetForm('ruleForm')"
+                            >重置</el-button
+                        >
+                    </el-form-item>
+                </el-form>
+            </el-col>
+        </el-row>
     </div>
 </template>
 <script>
@@ -753,11 +760,83 @@ export default {
                     ],
                 },
             ],
+            ruleForm: {
+                name: "",
+                department: "",
+                usageType: "",
+                creater: "",
+                luruma: "",
+                status: "",
+                desc: "",
+            },
+            rules: {
+                name: [
+                    {
+                        required: true,
+                        message: "请输入模板名称",
+                        trigger: "blur",
+                    },
+                    // {
+                    //     min: 3,
+                    //     max: 5,
+                    //     message: "长度在 3 到 5 个字符",
+                    //     trigger: "blur",
+                    // },
+                ],
+                department: [
+                    {
+                        required: true,
+                        message: "请输入使用部门",
+                        trigger: "blur",
+                    },
+                ],
+                creater: [
+                    {
+                        required: true,
+                        message: "请输入模板制作者",
+                        trigger: "blur",
+                    },
+                ],
+                luruma: [
+                    {
+                        required: true,
+                        message: "请输入录入码",
+                        trigger: "blur",
+                    },
+                ],
+                status: [
+                    {
+                        required: true,
+                        message: "请选择模板状态",
+                        trigger: "change",
+                    },
+                ],
+                usageType: [
+                    {
+                        required: true,
+                        message: "请选择模板类别",
+                        trigger: "change",
+                    },
+                ],
+            },
         };
     },
     mounted() {},
     created() {},
     methods: {
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    console.log(this.ruleForm);
+                } else {
+                    console.log("error submit!!");
+                    return false;
+                }
+            });
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        },
         execCommand(cmd) {
             this.$refs.sdeEditor.execCommand(cmd);
         },
@@ -798,16 +877,14 @@ export default {
 
             axios
                 .post(config.url + "/record-template", {
-                    templateName: that.templateTypeToSave,
+                    templateName: that.ruleForm,
+                    department: that.ruleForm.department,
+                    usageType: that.ruleForm.usageType,
+                    creater: that.ruleForm.creater,
+                    luruma: that.ruleForm.luruma,
+                    status: that.ruleForm.status,
+                    comment: that.ruleForm.desc,
                     template: xml,
-                    templateNo: that.templateNo,
-                    department: that.department,
-                    usageType: that.usageType,
-                    creater: that.creater,
-                    creationTime: that.creationTime,
-                    luruma: that.luruma,
-                    status: that.status,
-                    comment: that.comment,
                 })
                 .then(function (response) {
                     console.log(response);

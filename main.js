@@ -22,11 +22,11 @@ app.on("window-all-closed", function() {
 // 这个方法就被调用
 app.on("ready", function() {
     console.log(process.argv);
-    let p = process.argv[process.argv.length - 1].split("=");
+    let param = process.argv[process.argv.length - 1].split("=");
     // 创建浏览器窗口。
-    console.log(p);
+    console.log(param);
     mainWindow = new BrowserWindow({ width: 800, height: 600 });
-    if (p.length != 2) {
+    if (param.length != 2) {
         mainWindow.loadURL(
             url.format({
                 pathname: path.join(__dirname, "/dist/index.html"),
@@ -41,7 +41,7 @@ app.on("ready", function() {
                 pathname: path.join(__dirname, "/dist/index.html"),
                 protocol: "file:",
                 slashes: true,
-                hash: "patients/" + p[1]
+                hash: "patients/" + param[1]
             })
         );
     }

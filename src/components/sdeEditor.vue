@@ -67,13 +67,12 @@ export default {
         console.log("sde components created.");
     },
     watch: {
+        //监听 defaultXML 的改变
         defaultXML(newXML) {
-            console.log(11);
             this.sde.importXML(newXML);
         },
     },
     mounted() {
-        //alert('新增扩展toolbar示例，详见sdeEditor.vue组件!');
         this.sde = new SDE({
             el: this.$refs.editor,
             iframe_css_src: null, //string/Array数组 扩展css
@@ -120,7 +119,6 @@ export default {
         });
         let that = this;
         this.sde.addListener("ready", function () {
-            console.log("sde 初始化完成！");
             that.sde.importXML(that.defaultXML);
         });
         this.sde.addListener("headerfooteropen", function () {
